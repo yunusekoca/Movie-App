@@ -103,4 +103,27 @@ final class APIService {
             completion(.success(topRatedMovies.results))
         }.resume()
     }
+    
+    func getTrailerLinkFromYoutube(with query: String, completion: @escaping (Result<Trailer, APIError>) -> Void) {
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        guard let url = URL(string: "\(Constants.youtubeBaseURL)?q=\(query)&key=\(Constants.youtube_API_KEY)") else { return }
+        
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
+            guard let data = data, error == nil else {
+                completion(.failure(APIError.connectionError))
+                return
+            }
+            
+            guard let trailers = try? JSONDecoder().decode(Trailers.self, from: data) else {
+                completion(.failure(APIError.decodeError))
+                return
+            }
+            guard let firstTrailer = trailers.items.first else {
+                completion(.failure(APIError.decodeError))
+                return
+            }
+            
+            completion(.success(firstTrailer))
+        }.resume()
+    }
 }

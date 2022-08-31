@@ -14,7 +14,8 @@ final class HomeViewController: UIViewController {
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         homeViewModel = HomeViewModel()
-        headerView = PosterHeaderUIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 1.4))
+        let headerFrame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 1.4)
+        headerView = PosterHeaderUIView(frame: headerFrame)
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -32,29 +33,31 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Ana Sayfa"
-        view.addSubview(table)
         
+        view.addSubview(table)
         table.delegate = self
         table.dataSource = self
-        
         table.tableHeaderView = headerView
         
         homeViewModel.homeViewModelDelegate = self
         homeViewModel.fetchAllDataFromAPI()
-    }
-    
-    private func configureHeader(posterURL: URL) {
-        headerView.configurePoster(with: posterURL)
+        
+        headerView.posterHeaderUIViewDelegate = self
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         table.frame = view.bounds
     }
+    
+    private func pushToMovieDetails(movie: Movie) {
+        let movieDetailsVM = MovieDetailsViewModel(model: movie)
+        let detailVC = MovieDetailsViewController(movieDetailsViewModel: movieDetailsVM)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
 }
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return homeViewModel.sectionCount
     }
@@ -72,6 +75,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
+        cell.homeTableViewCellDelegate = self
         let movies = homeViewModel.getContentsInSection(section: indexPath.section)
         cell.configureCell(with: movies)
         
@@ -99,13 +103,21 @@ extension HomeViewController: HomeViewModelDelegate {
         print(errorMessage)
     }
     
-    func headerURLFetched(posterURL: URL) {
-        self.configureHeader(posterURL: posterURL)
-    }
-    
     func reloadTable(row: Int, section: Int) {
         DispatchQueue.main.async {
             self.table.reloadRows(at: [IndexPath(row: row, section: section)], with: UITableView.RowAnimation.automatic)
         }
+    }
+}
+
+extension HomeViewController: HomeTableViewCellDelegate {
+    func movieTappedInCell(movie: Movie) {
+        pushToMovieDetails(movie: movie)
+    }
+}
+
+extension HomeViewController: PosterHeaderUIViewDelegate {
+    func headerPosterTapped(movie: Movie) {
+        pushToMovieDetails(movie: movie)
     }
 }

@@ -7,9 +7,16 @@
 
 import UIKit
 
+protocol PosterHeaderUIViewDelegate: AnyObject {
+    func headerPosterTapped(movie: Movie)
+}
+
 final class PosterHeaderUIView: UIView {
     
+    private let posterHeaderViewModel: PosterHeaderViewModel
     private let gradient: CAGradientLayer
+    
+    weak var posterHeaderUIViewDelegate: PosterHeaderUIViewDelegate?
     
     private lazy var headerImage: UIImageView = {
         let imageView = UIImageView()
@@ -24,20 +31,29 @@ final class PosterHeaderUIView: UIView {
         button.setImage(buttonImage, for: .normal)
         button.tintColor = .red
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(posterTapped), for: .touchUpInside)
         return button
     }()
     
     override init(frame: CGRect) {
         self.gradient = CAGradientLayer()
+        self.posterHeaderViewModel = PosterHeaderViewModel()
         super.init(frame: frame)
         addSubview(headerImage)
         addSubview(playButton)
-        
         applyConstraints()
+        
+        posterHeaderViewModel.posterHeaderViewModelDelegate = self
+        posterHeaderViewModel.fetchMoviePoster()
     }
     
-    func configurePoster(with posterURL: URL) {
-        headerImage.sd_setImage(with: posterURL)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc private func posterTapped() {
+        guard let movie = posterHeaderViewModel.getMovie() else { return }
+        posterHeaderUIViewDelegate?.headerPosterTapped(movie: movie)
     }
     
     private func applyConstraints() {
@@ -60,13 +76,19 @@ final class PosterHeaderUIView: UIView {
         layer.addSublayer(gradient)
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         headerImage.frame = bounds
         applyGradient()
+    }
+}
+
+extension PosterHeaderUIView: PosterHeaderViewModelDelegate {
+    func posterURLFetched(movie: Movie, posterURL: URL) {
+        headerImage.sd_setImage(with: posterURL)
+    }
+    
+    func errorOccurred(errorMessage: String) {
+        print(errorMessage)
     }
 }
