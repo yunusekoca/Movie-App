@@ -17,7 +17,6 @@ fileprivate enum Sections: Int {
 
 protocol HomeViewModelDelegate: AnyObject {
     func errorOccurred(errorMessage: String)
-    func headerURLFetched(posterURL: URL)
     func reloadTable(row: Int, section: Int)
 }
 
@@ -72,9 +71,6 @@ final class HomeViewModel {
             case .success(let trendMovies):
                 self?.trendMovies = trendMovies
                 self?.homeViewModelDelegate?.reloadTable(row: 0, section: Sections.TrendMovies.rawValue)
-                guard let headerPosterPath = trendMovies.randomElement()?.poster_path else { return }
-                guard let posterURL = URL(string: "\(Constants.posterBaseURL)/\(headerPosterPath)") else { return }
-                self?.homeViewModelDelegate?.headerURLFetched(posterURL: posterURL)
             case .failure(let error):
                 self?.homeViewModelDelegate?.errorOccurred(errorMessage: error.localizedDescription)
             }

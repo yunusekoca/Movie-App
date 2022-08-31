@@ -12,6 +12,7 @@ struct Movies: Codable {
 }
 
 struct Movie: Codable {
+    let original_name: String?
     let original_title: String?
     let poster_path: String?
     let overview: String?

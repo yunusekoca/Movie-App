@@ -7,12 +7,18 @@
 
 import UIKit
 
+protocol HomeTableViewCellDelegate: AnyObject {
+    func movieTappedInCell(movie: Movie)
+}
+
 final class HomeTableViewCell: UITableViewCell {
     
     static let identifier = "HomeTableViewCell"
     
     private lazy var posters: [Movie] = [Movie]()
     
+    weak var homeTableViewCellDelegate: HomeTableViewCellDelegate?
+
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -61,5 +67,9 @@ extension HomeTableViewCell: UICollectionViewDelegate, UICollectionViewDataSourc
         cell.configurePosterCollectionViewCell(with: posterURL)
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        homeTableViewCellDelegate?.movieTappedInCell(movie: posters[indexPath.row])
     }
 }
