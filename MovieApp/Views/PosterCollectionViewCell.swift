@@ -17,6 +17,7 @@ final class PosterCollectionViewCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.backgroundColor = .systemBackground
+        imageView.image = UIImage(systemName: "questionmark")
         return imageView
     }()
     
@@ -27,6 +28,11 @@ final class PosterCollectionViewCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        posterImage.image = UIImage(systemName: "questionmark")
     }
     
     func configurePosterCollectionViewCell(with posterUrlString: String?) {

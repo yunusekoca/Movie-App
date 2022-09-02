@@ -20,7 +20,7 @@ final class PosterHeaderUIView: UIView {
     
     private lazy var headerImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
     }()

@@ -16,7 +16,11 @@ final class TabBarViewController: UITabBarController {
         homeVC.title = "Ana Sayfa"
         homeVC.tabBarItem.image = UIImage(systemName: "house")
         
+        let searchVC = UINavigationController(rootViewController: SearchViewController())
+        searchVC.title = "Ara"
+        searchVC.tabBarItem.image = UIImage(systemName: "magnifyingglass")
+        
         tabBar.tintColor = .label
-        setViewControllers([homeVC], animated: true)
+        setViewControllers([homeVC, searchVC], animated: true)
     }
 }
