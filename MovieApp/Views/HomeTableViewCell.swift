@@ -18,7 +18,7 @@ final class HomeTableViewCell: UITableViewCell {
     private lazy var posters: [Movie] = [Movie]()
     
     weak var homeTableViewCellDelegate: HomeTableViewCellDelegate?
-
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal

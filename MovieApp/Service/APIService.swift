@@ -118,12 +118,50 @@ final class APIService {
                 completion(.failure(APIError.decodeError))
                 return
             }
+            
             guard let firstTrailer = trailers.items.first else {
                 completion(.failure(APIError.decodeError))
                 return
             }
             
             completion(.success(firstTrailer))
+        }.resume()
+    }
+    
+    func getPopularContents(completion: @escaping (Result<[Movie], APIError>) -> Void) {
+        guard let url = URL(string: "\(Constants.baseURL)/3/trending/all/day?api_key=\(Constants.API_KEY)&language=tr-TR") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                completion(.failure(APIError.connectionError))
+                return
+            }
+            
+            guard let contents = try? JSONDecoder().decode(Movies.self, from: data) else {
+                completion(.failure(APIError.decodeError))
+                return
+            }
+            
+            completion(.success(contents.results))
+        }.resume()
+    }
+    
+    func queryForContent(query: String, completion: @escaping (Result<[Movie], APIError>) -> Void) {
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
+        guard let url = URL(string: "\(Constants.baseURL)/3/search/multi?api_key=\(Constants.API_KEY)&language=tr-TR&query=\(query)") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            guard let data = data, error == nil else {
+                completion(.failure(APIError.connectionError))
+                return
+            }
+            
+            guard let contents = try? JSONDecoder().decode(Movies.self, from: data) else {
+                completion(.failure(APIError.decodeError))
+                return
+            }
+            
+            completion(.success(contents.results))
         }.resume()
     }
 }
