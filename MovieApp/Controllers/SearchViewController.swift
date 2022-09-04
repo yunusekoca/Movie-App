@@ -15,6 +15,7 @@ final class SearchViewController: UIViewController {
     private lazy var searchController: UISearchController = {
         let controller = UISearchController(searchResultsController: SearchResultsViewController())
         controller.searchBar.placeholder = "Filmlerde veya dizilerde arayın"
+        controller.searchBar.setValue("Vazgeç", forKey: "cancelButtonText")
         controller.searchBar.tintColor = .label
         return controller
     }()

@@ -26,6 +26,7 @@ final class MovieDetailsViewController: UIViewController {
     
     private lazy var trailerWebView: WKWebView = {
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.5))
+        webView.scrollView.isScrollEnabled = false
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.isOpaque = false
         return webView
